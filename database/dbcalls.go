@@ -129,12 +129,11 @@ func (mgr *manager) GetSingleRecordByEmailForUser(email, collectionName string) 
 	return resp
 }
 
-
 func (mgr *manager) GetListProducts(page, limit, offset int, collectionName string) ([]types.Product, int64, error) {
 	// Calculate skip value based on page and limit
 	skip := (page - 1) * limit
 	if offset > 0 {
-			skip = offset
+		skip = offset
 	}
 
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
@@ -147,31 +146,30 @@ func (mgr *manager) GetListProducts(page, limit, offset int, collectionName stri
 	// Query documents
 	cur, err := orgCollection.Find(context.TODO(), bson.M{}, findOptions)
 	if err != nil {
-			return nil, 0, err
+		return nil, 0, err
 	}
 	defer cur.Close(context.TODO())
 
 	// Decode documents
 	var products []types.Product
 	if err := cur.All(context.TODO(), &products); err != nil {
-			return nil, 0, err
+		return nil, 0, err
 	}
 
 	// Count total documents
 	count, err := orgCollection.CountDocuments(context.TODO(), bson.M{})
 	if err != nil {
-			return nil, 0, err
+		return nil, 0, err
 	}
 
 	return products, count, nil
 }
 
-
-func (mgr *manager) SearchProduct(page, limit, offset int, search,collectionName string) ([]types.Product, int64, error) {
+func (mgr *manager) SearchProduct(page, limit, offset int, search, collectionName string) ([]types.Product, int64, error) {
 	// Calculate skip value based on page and limit
 	skip := (page - 1) * limit
 	if offset > 0 {
-			skip = offset
+		skip = offset
 	}
 
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
@@ -185,36 +183,35 @@ func (mgr *manager) SearchProduct(page, limit, offset int, search,collectionName
 
 	if len(search) >= 3 {
 		searchFilter["$or"] = []bson.M{
-			{"name" : primitive.Regex{Pattern: ".*" + search + ".*", Options : "i"}},
-			{"description" : primitive.Regex{Pattern: ".*" + search + ".*", Options : "i"}},
+			{"name": primitive.Regex{Pattern: ".*" + search + ".*", Options: "i"}},
+			{"description": primitive.Regex{Pattern: ".*" + search + ".*", Options: "i"}},
 		}
 	}
-
 
 	// Query documents
 	cur, err := orgCollection.Find(context.TODO(), searchFilter, findOptions)
 	if err != nil {
-			return nil, 0, err
+		return nil, 0, err
 	}
 	defer cur.Close(context.TODO())
 
 	// Decode documents
 	var products []types.Product
 	if err := cur.All(context.TODO(), &products); err != nil {
-			return nil, 0, err
+		return nil, 0, err
 	}
 
 	// Count total documents
 	count, err := orgCollection.CountDocuments(context.TODO(), bson.M{})
 	if err != nil {
-			return nil, 0, err
+		return nil, 0, err
 	}
 
 	return products, count, nil
 }
 
-func (mgr *manager)	GetSingleProductById(id primitive.ObjectID, collectionName string)(types.Product, error){
-	filter := bson.D{{Key :"_id", Value: id}}
+func (mgr *manager) GetSingleProductById(id primitive.ObjectID, collectionName string) (types.Product, error) {
+	filter := bson.D{{Key: "_id", Value: id}}
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
 
 	var product types.Product
@@ -223,18 +220,17 @@ func (mgr *manager)	GetSingleProductById(id primitive.ObjectID, collectionName s
 	return product, err
 }
 
-
-func (mgr *manager) UpdateProduct(p types.Product, colllectionName string)error{
+func (mgr *manager) UpdateProduct(p types.Product, colllectionName string) error {
 	orgCollection := mgr.connection.Database(constant.Database).Collection(colllectionName)
 	filter := bson.D{{Key: "_id", Value: p.Id}}
 	update := bson.D{{Key: "$set", Value: p}}
 
 	_, err := orgCollection.UpdateOne(context.TODO(), filter, update)
 
-	return err 
+	return err
 }
 
-func (mgr *manager)	DeleteProduct(id primitive.ObjectID, collectionName string)error{
+func (mgr *manager) DeleteProduct(id primitive.ObjectID, collectionName string) error {
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
 	filter := bson.D{{Key: "_id", Value: id}}
 
@@ -242,7 +238,7 @@ func (mgr *manager)	DeleteProduct(id primitive.ObjectID, collectionName string)e
 	return err
 }
 
-func (mgr *manager)	GetSingleAddress(id primitive.ObjectID, collectionName string)(types.Address, error){
+func (mgr *manager) GetSingleAddress(id primitive.ObjectID, collectionName string) (types.Address, error) {
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
 	filter := bson.D{{Key: "user_id", Value: id}}
 	var address types.Address
@@ -250,7 +246,7 @@ func (mgr *manager)	GetSingleAddress(id primitive.ObjectID, collectionName strin
 	return address, err
 }
 
-func (mgr *manager)	GetSingleUserByUserId(id primitive.ObjectID, collectionName string)(types.User, error){
+func (mgr *manager) GetSingleUserByUserId(id primitive.ObjectID, collectionName string) (types.User, error) {
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
 	filter := bson.D{{Key: "_id", Value: id}}
 	var user types.User
@@ -258,7 +254,7 @@ func (mgr *manager)	GetSingleUserByUserId(id primitive.ObjectID, collectionName 
 	return user, err
 }
 
-func (mgr *manager)	GetCartObjectById(id primitive.ObjectID, collectionName string)(types.Cart, error){
+func (mgr *manager) GetCartObjectById(id primitive.ObjectID, collectionName string) (types.Cart, error) {
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
 	filter := bson.D{{Key: "_id", Value: id}}
 	var cart types.Cart
@@ -266,7 +262,7 @@ func (mgr *manager)	GetCartObjectById(id primitive.ObjectID, collectionName stri
 	return cart, err
 }
 
-func (mgr *manager)	GetCartObjectListForUser(userID primitive.ObjectID, collectionName string)([]types.Cart, error){
+func (mgr *manager) GetCartObjectListForUser(userID primitive.ObjectID, collectionName string) ([]types.Cart, error) {
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
 	// Define the filter for the user's carts
 	filter := bson.D{{Key: "userId", Value: userID}}
@@ -281,14 +277,13 @@ func (mgr *manager)	GetCartObjectListForUser(userID primitive.ObjectID, collecti
 	// Decode documents
 	var cartItems []types.Cart
 	if err := cursor.All(context.TODO(), &cartItems); err != nil {
-			return nil, err
+		return nil, err
 	}
 
 	return cartItems, nil
 }
 
-
-func (mgr *manager) UpdateUser(u types.User, collectionName string)error{
+func (mgr *manager) UpdateUser(u types.User, collectionName string) error {
 	orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
 	filter := bson.D{{Key: "_id", Value: u.Id}}
 	update := bson.D{{Key: "$set", Value: u}}
@@ -296,7 +291,7 @@ func (mgr *manager) UpdateUser(u types.User, collectionName string)error{
 	return err
 }
 
-func (mgr *manager)	UpdateCartToCheckout(userID primitive.ObjectID, collectionName string)error{
+func (mgr *manager) UpdateCartToCheckout(userID primitive.ObjectID, collectionName string) error {
 	// orgCollection := mgr.connection.Database(constant.Database).Collection(collectionName)
 	// filter := bson.D{{Key: "_id", Value: c.Id}}
 	// update := bson.D{{Key: "$set", Value: c}}

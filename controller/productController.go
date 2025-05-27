@@ -228,10 +228,10 @@ func CheckoutOrder(c *gin.Context) {
 
 	err := database.Mgr.UpdateCartToCheckout(userResp.Id, constant.CartCollection)
 
-	if err != nil{
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"err": true, "message": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"error": false, "message": "success"})
 }
